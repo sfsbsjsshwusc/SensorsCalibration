@@ -100,6 +100,12 @@ int main(int argc, char *argv[]) {
         std::cout << "Open dir " << mask_dir << " error !" << std::endl;
         exit(1);
     }
+    std::string extrinsic_basename;
+    if (!extrinsic_path.empty())
+    {
+        size_t pos = extrinsic_path.find_last_of("/\\");
+        extrinsic_basename = (pos == std::string::npos) ? extrinsic_path : extrinsic_path.substr(pos + 1);
+    }
     while ((ptr = readdir(dir)) != NULL)
     {
         std::string name = ptr->d_name;
@@ -114,7 +120,16 @@ int main(int argc, char *argv[]) {
         else if (suffix == ".pcd")
             lidar_file = data_folder + '/' + ptr->d_name;
         else if (suffix == ".txt")
+        {
+            std::string candidate_calib = data_folder + '/' + ptr->d_name;
+            if (!extrinsic_path.empty()
+                && (candidate_calib == extrinsic_path || ptr->d_name == extrinsic_basename))
+            {
+                ptr++;
+                continue;
+            }
             calib_file = data_folder + '/' + ptr->d_name;
+        }
         ptr++;
     }
 
