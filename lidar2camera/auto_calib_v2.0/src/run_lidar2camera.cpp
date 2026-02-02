@@ -72,8 +72,8 @@ bool LoadExtrinsicFromFile(const std::string &file_path, Eigen::Matrix4f &T_cust
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2 && argc != 4) {
-        std::cout << "Usage: ./bin/run_lidar2camera <data_folder> [--extrinsic <file>]\n"
+    if (argc != 2 && argc != 4 && argc != 5) {
+        std::cout << "Usage: ./bin/run_lidar2camera <data_folder> [--extrinsic <file>] [--score-only]\n"
                      "example:\n\t"
                      "./bin/run_lidar2camera data/st/1\n"
                      "./bin/run_lidar2camera data/kitti/1" << std::endl;
@@ -82,12 +82,20 @@ int main(int argc, char *argv[]) {
 
     std::string data_folder = argv[1];
     std::string extrinsic_path;
-    if (argc == 4) {
+    bool score_only = false;
+    if (argc >= 4) {
         if (std::string(argv[2]) != "--extrinsic") {
             std::cout << "Unknown option: " << argv[2] << std::endl;
             return 0;
         }
         extrinsic_path = argv[3];
+        if (argc == 5) {
+            if (std::string(argv[4]) != "--score-only") {
+                std::cout << "Unknown option: " << argv[4] << std::endl;
+                return 0;
+            }
+            score_only = true;
+        }
     }
     std::string lidar_file, img_file, calib_file;
     std::string mask_dir = data_folder + "/masks/";
@@ -156,6 +164,10 @@ int main(int argc, char *argv[]) {
         float score = 0.0F;
         calibrator.CalScore(T_custom, score, true);
         std::cout << "Custom extrinsic score (coarse): " << score << std::endl;
+        if (score_only)
+        {
+            return 0;
+        }
     }
     calibrator.Calibrate();
     Eigen::Matrix4f refined_extrinsic = calibrator.GetFinalTransformation();
