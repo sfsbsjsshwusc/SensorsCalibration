@@ -39,7 +39,8 @@ public:
         const std::string lidar_file,
         const std::string calib_file,
         const std::string img_file,
-        const std::string error_file);
+        const std::string error_file,
+        const Eigen::Matrix4f *custom_extrinsic = nullptr);
     void Calibrate();
     void ProcessPointcloud(const pcl::PointCloud<pcl::PointXYZI>::Ptr pc_origin);
     bool CalScore(Eigen::Matrix4f T, float& score, bool is_coarse);

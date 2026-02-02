@@ -145,7 +145,12 @@ int main(int argc, char *argv[]) {
     }
 
     auto time_begin = std::chrono::steady_clock::now();
-    Calibrator calibrator(mask_dir, lidar_file, calib_file, img_file, error_file);
+    Calibrator calibrator(mask_dir,
+                          lidar_file,
+                          calib_file,
+                          img_file,
+                          error_file,
+                          has_custom_extrinsic ? &T_custom : nullptr);
     if (has_custom_extrinsic)
     {
         float score = 0.0F;

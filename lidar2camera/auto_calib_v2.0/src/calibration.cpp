@@ -31,10 +31,16 @@ Calibrator::Calibrator(const std::string mask_dir,
                        const std::string lidar_file,
                        const std::string calib_file,
                        const std::string img_file,
-                       const std::string error_file)
+                       const std::string error_file,
+                       const Eigen::Matrix4f *custom_extrinsic)
 {
     // load calib file
     DataLoader::LoadCalibFile(calib_file, intrinsic_, extrinsic_, dist_);
+    if (custom_extrinsic != nullptr)
+    {
+        extrinsic_ = *custom_extrinsic;
+        std::cout << "Using custom extrinsic as initial pose." << std::endl;
+    }
     init_extrinsic_ = extrinsic_;
 
     // load image
